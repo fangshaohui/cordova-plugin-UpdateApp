@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='utf-8'?>
+<plugin id="cordova-plugin-updateApp" version="1.0.0" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+    <name>UpdateApp</name>
+	<!-- 添加插件时，命令行配置参数 -->
+	<js-module name="UpdateApp" src="www/UpdateApp.js">
+        <clobbers target="cordova.plugins.UpdateApp" />
+    </js-module>
+	<platform name="android">
+        <!-- parent指定xml文档中的父节点，* 表示根元素 -->
+        <config-file parent="/*" target="res/xml/config.xml">
+            <feature name="UpdateAppPlugin">
+                <param name="android-package" value="org.apache.cordova.updateApp.UpdateAppPlugin" />
+            </feature>
+        </config-file>
+       <!-- 在AndroidManifest.xml文件的manifest节点下配置，因为manifest是根元素，所以也可以写成 * -->
+        <config-file parent="/manifest" target="AndroidManifest.xml">
+            <!--权限 -->
+            <uses-permission android:name="android.permission.INTERNET" />
+      		<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+        </config-file>
+        
+        <config-file parent="/manifest/application" target="AndroidManifest.xml">
+            <!--注册service -->
+            <service android:name="org.apache.cordova.updateApp.DownloadApkService"></service>
+			<provider 
+				android:authorities="${applicationId}.provider" 
+				android:exported="false" 
+				android:grantUriPermissions="true" 
+				android:name="android.support.v4.content.FileProvider">
+				<meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/provider_paths" />
+			</provider>
+        </config-file>
+
+        <!-- 拷贝源码文件 -->
+        <source-file src="src/android/UpdateAppPlugin.java" target-dir="src/org/apache/cordova/updateApp" />
+        <source-file src="src/android/DownloadApkService.java" target-dir="src/org/apache/cordova/updateApp" />
+		<source-file src="src/android/provider_paths.xml" target-dir="res/xml" />
+        <!-- 为gradle添加依赖 不需要依赖 -->
+
+    </platform>
+	<!-- ios使用苹果商店更新 -->
+	<platform name="ios">
+    </platform>
+</plugin>
